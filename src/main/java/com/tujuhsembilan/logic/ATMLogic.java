@@ -19,10 +19,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ATMLogic {
   static int attempts = 0; // Declare attempts here
-  static final BigDecimal DAILY_LIMIT = BigDecimal.valueOf(5000000);
-
-  public static boolean checkDailyLimit(Customer customer, BigDecimal amount) {
-      return customer.getDailyTransactionAmount().add(amount).compareTo(DAILY_LIMIT) <= 0;
+  public static boolean isWithdrawalAllowed(BigDecimal balance, BigDecimal withdrawalAmount) {
+    BigDecimal minimumResidualBalance = BigDecimal.valueOf(10000);
+    return balance.compareTo(withdrawalAmount.add(minimumResidualBalance)) >= 0;
   }
   public static Customer login(Bank bank) {
       Scanner scanner = new Scanner(System.in);
@@ -75,6 +74,10 @@ public class ATMLogic {
     while (true) {
         System.out.println("Masukkan nominal uang yang ingin Anda tarik:");
         System.out.print("> ");
+        while (!scanner.hasNextBigDecimal()) {
+            System.out.println("Input harus berupa angka. Silakan coba lagi.");
+            scanner.next(); // discard non-numeric input
+        }
         amount = scanner.nextBigDecimal();
 
         // Add constraint for maximum amount per transaction
@@ -119,7 +122,7 @@ public class ATMLogic {
     }
 
     BigDecimal balance = customer.getBalance();
-    if (balance.compareTo(amount) < 0) {
+    if (!isWithdrawalAllowed(balance, amount)) {
         System.out.println("Saldo Anda tidak mencukupi untuk melakukan penarikan ini.");
     } else {
         customer.setBalance(balance.subtract(amount));
@@ -177,7 +180,7 @@ public class ATMLogic {
 
     Customer customer = transaction.getCustomer();
     BigDecimal balance = customer.getBalance();
-    if (balance.compareTo(topUpAmount) < 0) {
+    if (!isWithdrawalAllowed(balance, topUpAmount)) {
         System.out.println("Saldo Anda tidak mencukupi untuk pengisian pulsa ini.");
     } else {
         customer.setBalance(balance.subtract(topUpAmount));
@@ -227,7 +230,7 @@ public class ATMLogic {
 
     Customer customer = transaction.getCustomer();
     BigDecimal balance = customer.getBalance();
-    if (balance.compareTo(tokenAmount) < 0) {
+    if (!isWithdrawalAllowed(balance, tokenAmount)) {
         System.out.println("Saldo Anda tidak mencukupi untuk pembelian token ini.");
     } else {
         customer.setBalance(balance.subtract(tokenAmount));
@@ -262,7 +265,7 @@ public class ATMLogic {
         System.out.print("Masukkan nama bank tujuan (atau 0 untuk kembali ke menu utama): ");
         targetBankName = scanner.nextLine();
         if ("0".equals(targetBankName)) {
-            return; // Kembali ke menu utama
+            return; 
         }
         Optional<Bank> targetBank = BankRepo.findBankByName(targetBankName);
         if (!targetBank.isPresent()) {
@@ -273,7 +276,7 @@ public class ATMLogic {
         System.out.print("Masukkan nomor rekening tujuan (atau 0 untuk kembali ke menu utama): ");
         targetAccount = scanner.nextLine();
         if ("0".equals(targetAccount)) {
-            return; // Kembali ke menu utama
+            return; 
         }
         Optional<Customer> targetCustomer = targetBank.get().findCustomerByAccount(targetAccount);
         if (!targetCustomer.isPresent()) {
@@ -282,14 +285,18 @@ public class ATMLogic {
         }
 
         System.out.print("Masukkan jumlah yang ingin ditransfer (atau 0 untuk kembali ke menu utama): ");
+        while (!scanner.hasNextBigDecimal()) {
+            System.out.println("Input harus berupa angka. Silakan coba lagi.");
+            scanner.next();
+        }
         amount = scanner.nextBigDecimal();
         if (BigDecimal.ZERO.equals(amount)) {
-            return; // Kembali ke menu utama
+            return; 
         }
 
         BigDecimal balance = customer.getBalance();
         BigDecimal totalAmount = amount.add(BigDecimal.valueOf(2500)); 
-        if (balance.compareTo(totalAmount) < 0) {
+        if (!isWithdrawalAllowed(balance, totalAmount)) {
             System.out.println("Saldo Anda tidak mencukupi untuk melakukan transfer ini.");
             continue;
         } else {
@@ -313,6 +320,11 @@ public class ATMLogic {
 
     while (true) {
         System.out.print("Masukkan jumlah uang yang ingin Anda setor: ");
+        while (!scanner.hasNextBigDecimal()) {
+            System.out.println("Input harus berupa angka. Silakan coba lagi.");
+            System.out.print("Masukkan jumlah uang yang ingin Anda setor: ");
+            scanner.next(); // discard non-numeric input
+        }
         amount = scanner.nextBigDecimal();
 
         if (amount.compareTo(BigDecimal.valueOf(2500000)) > 0) {
@@ -329,6 +341,6 @@ public class ATMLogic {
 
     customer.add(amount);
     System.out.println("Penyetoran berhasil! Saldo Anda saat ini adalah: " + CurrencyUtil.formatRupiah(customer.getBalance()));
-  }
+}
 
 }
