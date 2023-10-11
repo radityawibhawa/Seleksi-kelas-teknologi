@@ -5,15 +5,13 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class BankCompany {
+public enum BankCompany {
   BRI("BRI"),
   BNI("BNI"),
   MANDIRI("Mandiri"),
-  BCA("BCA"),
+  BCA("BCA");
 
-  ;
-
-  private String name;
+  private final String name;
 
   public static BankCompany getByOrder(int order) {
     switch (order) {

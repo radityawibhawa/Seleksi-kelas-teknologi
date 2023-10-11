@@ -3,7 +3,9 @@ package com.tujuhsembilan.logic;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-@NoArgsConstructor(access = AccessLevel.NONE)
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class ConsoleUtil {
 
   public static final Scanner in = new Scanner(System.in);

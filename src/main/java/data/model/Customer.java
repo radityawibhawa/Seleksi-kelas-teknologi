@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Customer {
   private String id;
-
+  private BigDecimal dailyTransactionAmount = BigDecimal.ZERO;
   private String account;
   private String pin;
 
@@ -30,5 +30,16 @@ public class Customer {
    */
   public void add(BigDecimal amount) {
     this.balance = this.balance.add(amount);
+  }
+  public BigDecimal getDailyTransactionAmount() {
+    return dailyTransactionAmount;
+  }
+
+  public void addTransactionAmount(BigDecimal amount) {
+      this.dailyTransactionAmount = this.dailyTransactionAmount.add(amount);
+  }
+
+  public void resetDailyTransactionAmount() {
+      this.dailyTransactionAmount = BigDecimal.ZERO;
   }
 }

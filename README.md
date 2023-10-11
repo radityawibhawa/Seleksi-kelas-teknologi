@@ -12,8 +12,8 @@ Harap ikuti instruksi berikut **sebelum** Anda mulai mengerjakan proyek ini:
 ---
 
 ```plaintext
-Nama Lengkap:         { MASUKKAN NAMA ANDA DISINI }
-Asal Kampus/Sekolah:  { MASUKKAN NAMA LEMBAGA ANDA DISINI }
+Nama Lengkap:         IGD Raditya Wibhawa MN
+Asal Kampus/Sekolah:  Universitas Telkom
 ```
 
 ---
